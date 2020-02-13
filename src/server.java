@@ -41,8 +41,9 @@ class server
     }
 
     // Method will handle errors or send back correct answer to client
-    public static void runWithErrorHandler(PrintStream ps, BufferedReader br, ServerSocket server, Socket client, String[] words) throws IOException {
-        if (!(words[0].equals("add") || words[0].equals("subtract") || words[0].equals("multiply") || words[0].equals("bye") || words[0].equals("terminate"))) {
+    public static void runWithErrorHandler(PrintStream ps, String[] words) throws IOException {
+        if (!(words[0].equals("add") || words[0].equals("subtract") || words[0].equals("multiply") 
+        || words[0].equals("bye") || words[0].equals("terminate"))) {
             ps.println(-1);
         } 
         else if (words[0].equals("bye")) {
@@ -71,40 +72,50 @@ class server
         // Create server socket and establish connection
         ServerSocket server = new ServerSocket (Integer.parseInt(args[0]));
         System.out.println("Server waiting for client connection on port " + args[0]);
-        Socket client = server.accept();
-        System.out.println("Connection Established");
 
-        // Create PrintStream ps and BufferedReader br
-        PrintStream ps = new PrintStream(client.getOutputStream());
-        BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
 
-        // Send connection message to client
-        ps.println("Hello!");
+        // While loop to restart client socket
+        restart: while (!server.isClosed()) {
 
-        // Declare string
-        String fromClient;
-        
-        // While connection is established
-        while(true) {
-            while((fromClient = br.readLine()) != null) {
-                // Creating string array to parse
-                String[] words = fromClient.split("\\W+");
+            Socket client = server.accept();
+            System.out.println("Connection Established...");
 
-                // Running code
-                runWithErrorHandler(ps, br, server, client, words);
-            }   
+            // Create PrintStream ps and BufferedReader br
+            PrintStream ps = new PrintStream(client.getOutputStream());
+            BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
 
-            // Close connection
-            ps.close(); 
-            //br.close();  
-            //server.close(); 
-            client.close();
-            System.out.println("Client Disconnected");
-            break;
+            // Send connection message to client
+            ps.println("Hello!");
 
-            // Terminate application 
-            //System.exit(0); 
+            // Declare string
+            String fromClient;
+            
+            // While connection is established
+            while(!server.isClosed()) {
+                while((fromClient = br.readLine()) != null) {
+                    // Creating string array to parse
+                    String[] words = fromClient.split("\\W+");
 
-        }   
+                    // Running code
+                    runWithErrorHandler(ps, words);
+
+                    if (words[0].equals("terminate")) {
+                        server.close();
+                    }
+
+                }   
+                // Close connection to client socket
+                ps.close(); 
+                br.close();   
+                client.close();
+                System.out.println("Client Disconnected. Server still running on port " + Integer.parseInt(args[0]));
+                continue restart;
+            } 
+
+        }
+
+        // Terminate application 
+        System.out.println("Server shutting down");
+        System.exit(0); 
     }
 }

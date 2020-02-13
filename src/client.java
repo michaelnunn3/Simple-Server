@@ -59,6 +59,6 @@ class client
         dos.close(); 
         br.close(); 
         kb.close(); 
-        client.close(); 
+        client.close();
     }
 }
