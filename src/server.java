@@ -99,7 +99,7 @@ class server
                     System.out.println(fromClient);
 
                     // Creating string array to parse
-                    String[] words = fromClient.split("\\W+");
+                    String[] words = fromClient.split(" ");
 
                     // Running code
                     runWithErrorHandler(ps, words);
