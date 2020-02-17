@@ -71,14 +71,16 @@ class server
     {
         // Create server socket and establish connection
         ServerSocket server = new ServerSocket (Integer.parseInt(args[0]));
-        System.out.println("Server waiting for client connection on port " + args[0]);
+        
 
 
         // While loop to restart client socket
         restart: while (!server.isClosed()) {
-
+            System.out.println("Server waiting for client connection on port " + args[0] + "...");
+            
+            // Accept client connection
             Socket client = server.accept();
-            System.out.println("Connection Established...");
+            System.out.println("Connection Established!");
 
             // Create PrintStream ps and BufferedReader br
             PrintStream ps = new PrintStream(client.getOutputStream());
@@ -93,6 +95,9 @@ class server
             // While connection is established
             while(!server.isClosed()) {
                 while((fromClient = br.readLine()) != null) {
+                    // Print out recieved command
+                    System.out.println(fromClient);
+
                     // Creating string array to parse
                     String[] words = fromClient.split("\\W+");
 
@@ -108,14 +113,14 @@ class server
                 ps.close(); 
                 br.close();   
                 client.close();
-                System.out.println("Client Disconnected. Server still running on port " + Integer.parseInt(args[0]));
+                System.out.println("Client Disconnected.");
                 continue restart;
             } 
 
         }
 
         // Terminate application 
-        System.out.println("Server shutting down");
+        System.out.println("Server shutting down.");
         System.exit(0); 
     }
 }

@@ -22,7 +22,7 @@ class client
             System.out.println("ERROR -4: one or more of the inputs contain(s) non-number(s).");
         }
         else if (Integer.parseInt(fromServer) == -5) {
-            System.out.println("-5: exit");
+            System.out.println("RETURN -5: exit");
 
         }
     }
